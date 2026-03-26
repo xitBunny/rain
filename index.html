@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="不可结缘 — 像素风妖怪收集RPG小游戏，在奇幻的日常中邂逅万物之灵">
+    <title>不可结缘 — 像素风妖怪小游戏</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <!-- UI Overlay -->
+        <div id="ui-overlay" class="hidden">
+            <!-- Dialog Box -->
+            <div id="dialog-box" class="hidden">
+                <div id="dialog-speaker"></div>
+                <div id="dialog-text"></div>
+                <div id="dialog-next">▼</div>
+            </div>
+            <!-- Collection Book -->
+            <div id="collection-overlay" class="hidden">
+                <div id="collection-book">
+                    <div id="collection-header">
+                        <h2>妖怪图鉴</h2>
+                        <button id="collection-close">✕</button>
+                    </div>
+                    <div id="collection-pages"></div>
+                    <div id="collection-nav">
+                        <button id="col-prev">◀</button>
+                        <span id="col-page-num">1/1</span>
+                        <button id="col-next">▶</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Story Scroll -->
+            <div id="story-overlay" class="hidden">
+                <div id="story-scroll">
+                    <div id="story-content"></div>
+                    <button id="story-close">收好</button>
+                </div>
+            </div>
+        </div>
+        <!-- Top Right Controls -->
+        <div id="top-right-controls" class="hidden">
+            <button id="map-toggle">🗺️ 地图</button>
+            <button id="char-switch-toggle">👤 切换主角</button>
+            <button id="bgm-toggle">🎵 音效: 关</button>
+            <button id="hud-toggle">🎒 行囊</button>
+        </div>
+
+        <!-- HUD for minigame -->
+        <div id="game-hud" class="hidden">
+            <div id="hud-left">
+                <div id="tear-counter-container">
+                    <div id="tear-label">💧 大眼泪</div>
+                    <div id="tear-text">0 / 0</div>
+                </div>
+                <div id="bonus-counter-container">
+                    <div id="bonus-label">★ 附加分</div>
+                    <div id="bonus-text">0</div>
+                </div>
+                <div id="umbrella-bar-container">
+                    <div id="umbrella-label">☂ 耐久</div>
+                    <div id="umbrella-bar-bg"><div id="umbrella-bar-fill"></div></div>
+                </div>
+            </div>
+            <div id="hud-right">
+                <div id="timer">60</div>
+                <button id="restart-btn">重新挑战</button>
+            </div>
+        </div>
+
+        <!-- Collection Overlay -->
+        <div id="collection-overlay" class="hidden">
+            <div id="collection-window">
+                <div id="col-header">
+                    <h2>= 妖怪收集册 =</h2>
+                    <button id="col-close">X</button>
+                </div>
+                <div id="col-content">
+                    <div id="col-left">
+                        <canvas id="col-canvas" width="200" height="200"></canvas>
+                        <h3 id="col-name"></h3>
+                    </div>
+                    <div id="col-right">
+                        <div id="col-story"></div>
+                        <div id="col-item-title">【信物】</div>
+                        <div id="col-item"></div>
+                        <div id="col-taunt"></div>
+                    </div>
+                </div>
+                <div id="col-nav">
+                    <button id="col-prev">◀</button>
+                    <span id="col-page">1 / 1</span>
+                    <button id="col-next">▶</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Overlay -->
+        <div id="map-overlay" class="hidden">
+            <div id="map-window">
+                <div id="map-header">
+                    <h2>= 结缘之旅地图 =</h2>
+                    <button id="map-close">X</button>
+                </div>
+                <div id="map-content">
+                    <!-- Nodes will be drawn dynamically via canvas or CSS -->
+                    <canvas id="map-canvas" width="600" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRT Scanline Overlay -->
+        <div id="crt-overlay"></div>
+    </div>
+
+    <script src="js/utils/pixel.js"></script>
+    <script src="js/utils/audio.js"></script>
+    <script src="js/data/yokai.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/collection.js"></script>
+    <script src="js/scenes/menu.js"></script>
+    <script src="js/scenes/genderSelect.js"></script>
+    <script src="js/scenes/explore.js"></script>
+    <script src="js/scenes/encounter.js"></script>
+    <script src="js/scenes/rainGame.js"></script>
+    <script src="js/scenes/lanternGame.js"></script>
+    <script src="js/scenes/bookGame.js"></script>
+    <script src="js/scenes/trainGame.js"></script>
+    <script src="js/scenes/map.js"></script>
+    <script src="js/scenes/result.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
