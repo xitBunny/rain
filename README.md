@@ -49,4 +49,5 @@ python3 -m http.server 8000
   - `collection.js` - 图鉴系统逻辑
 
 ---
-祝游玩愉快！
+祝游玩愉快！ Last update: 2026-03-26
+
