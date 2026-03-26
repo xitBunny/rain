@@ -2,13 +2,20 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 核心修复：强制移动端适配，禁止缩放，适配刘海屏 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <meta name="description" content="不可结缘 — 像素风妖怪收集RPG小游戏，在奇幻的日常中邂逅万物之灵">
     <title>不可结缘 — 像素风妖怪小游戏</title>
+    
+    <!-- 引入路径物理修复：去掉所有的文件夹前缀 -->
+    <link rel="stylesheet" href="style.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div id="game-container">
@@ -21,22 +28,33 @@
                 <div id="dialog-text"></div>
                 <div id="dialog-next">▼</div>
             </div>
-            <!-- Collection Book -->
+            <!-- Collection Book (Overlay Layer) -->
             <div id="collection-overlay" class="hidden">
-                <div id="collection-book">
-                    <div id="collection-header">
-                        <h2>妖怪图鉴</h2>
-                        <button id="collection-close">✕</button>
+                <div id="collection-window">
+                    <div id="col-header">
+                        <h2>= 妖怪收集册 =</h2>
+                        <button id="col-close">X</button>
                     </div>
-                    <div id="collection-pages"></div>
-                    <div id="collection-nav">
+                    <div id="col-content">
+                        <div id="col-left">
+                            <canvas id="col-canvas" width="200" height="200"></canvas>
+                            <h3 id="col-name"></h3>
+                        </div>
+                        <div id="col-right">
+                            <div id="col-story"></div>
+                            <div id="col-item-title">【信物】</div>
+                            <div id="col-item"></div>
+                            <div id="col-taunt"></div>
+                        </div>
+                    </div>
+                    <div id="col-nav">
                         <button id="col-prev">◀</button>
-                        <span id="col-page-num">1/1</span>
+                        <span id="col-page">1 / 1</span>
                         <button id="col-next">▶</button>
                     </div>
                 </div>
             </div>
-            <!-- Story Scroll -->
+            <!-- Story Scroll (Overlay Layer) -->
             <div id="story-overlay" class="hidden">
                 <div id="story-scroll">
                     <div id="story-content"></div>
@@ -74,33 +92,6 @@
             </div>
         </div>
 
-        <!-- Collection Overlay -->
-        <div id="collection-overlay" class="hidden">
-            <div id="collection-window">
-                <div id="col-header">
-                    <h2>= 妖怪收集册 =</h2>
-                    <button id="col-close">X</button>
-                </div>
-                <div id="col-content">
-                    <div id="col-left">
-                        <canvas id="col-canvas" width="200" height="200"></canvas>
-                        <h3 id="col-name"></h3>
-                    </div>
-                    <div id="col-right">
-                        <div id="col-story"></div>
-                        <div id="col-item-title">【信物】</div>
-                        <div id="col-item"></div>
-                        <div id="col-taunt"></div>
-                    </div>
-                </div>
-                <div id="col-nav">
-                    <button id="col-prev">◀</button>
-                    <span id="col-page">1 / 1</span>
-                    <button id="col-next">▶</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Map Overlay -->
         <div id="map-overlay" class="hidden">
             <div id="map-window">
@@ -109,7 +100,6 @@
                     <button id="map-close">X</button>
                 </div>
                 <div id="map-content">
-                    <!-- Nodes will be drawn dynamically via canvas or CSS -->
                     <canvas id="map-canvas" width="600" height="400"></canvas>
                 </div>
             </div>
@@ -119,21 +109,22 @@
         <div id="crt-overlay"></div>
     </div>
 
-    <script src="js/utils/pixel.js"></script>
-    <script src="js/utils/audio.js"></script>
-    <script src="js/data/yokai.js"></script>
-    <script src="js/player.js"></script>
-    <script src="js/collection.js"></script>
-    <script src="js/scenes/menu.js"></script>
-    <script src="js/scenes/genderSelect.js"></script>
-    <script src="js/scenes/explore.js"></script>
-    <script src="js/scenes/encounter.js"></script>
-    <script src="js/scenes/rainGame.js"></script>
-    <script src="js/scenes/lanternGame.js"></script>
-    <script src="js/scenes/bookGame.js"></script>
-    <script src="js/scenes/trainGame.js"></script>
-    <script src="js/scenes/map.js"></script>
-    <script src="js/scenes/result.js"></script>
-    <script src="js/main.js"></script>
+    <!-- 核心修复：所有脚本路径打平 -->
+    <script src="pixel.js"></script>
+    <script src="audio.js"></script>
+    <script src="yokai.js"></script>
+    <script src="player.js"></script>
+    <script src="collection.js"></script>
+    <script src="menu.js"></script>
+    <script src="genderSelect.js"></script>
+    <script src="explore.js"></script>
+    <script src="encounter.js"></script>
+    <script src="rainGame.js"></script>
+    <script src="lanternGame.js"></script>
+    <script src="bookGame.js"></script>
+    <script src="trainGame.js"></script>
+    <script src="map.js"></script>
+    <script src="result.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

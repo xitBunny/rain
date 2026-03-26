@@ -29,19 +29,26 @@
     --ui-shadow: rgba(0, 0, 0, 0.6);
 }
 
+/* 核心修复：清除边距，禁止滚动，确保容器铺满全屏 */
 html, body {
+    margin: 0;
+    padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: hidden; /* 防止手机上出现上下滑动 */
     background: var(--bg-dark);
     font-family: var(--pixel-font);
+    position: fixed; /* 锁定视口，防止 iOS 橡皮筋回弹 */
+    touch-action: none; /* 禁用系统默认手势，确保画布控制顺滑 */
 }
 
 /* Game Container */
 #game-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -50,6 +57,9 @@ html, body {
 
 #game-canvas {
     display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* 核心：在不同比例的手机屏上按比例自适应 */
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     cursor: none;
@@ -146,7 +156,7 @@ html, body {
 }
 
 /* ========================================
-   Game HUD
+   Game HUD (Mobile Friendly)
    ======================================== */
 #game-hud {
     position: absolute;
@@ -204,6 +214,12 @@ html, body {
     overflow: hidden;
 }
 
+#umbrella-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rain-blue), var(--rain-light));
+    transition: width 0.3s;
+}
+
 #hud-right {
     text-align: center;
 }
@@ -222,20 +238,16 @@ html, body {
     margin-top: 2px;
 }
 
-/* Timer warning state */
-#timer.warning {
-    color: var(--thunder-yellow);
-    animation: timerPulse 0.5s infinite;
-}
-
-#timer.danger {
-    color: var(--danger-red);
-    animation: timerPulse 0.3s infinite;
-}
-
-@keyframes timerPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+#restart-btn {
+    margin-top: 10px;
+    pointer-events: auto;
+    background: rgba(255, 71, 87, 0.2);
+    border: 1px solid var(--danger-red);
+    color: #fff;
+    font-family: var(--pixel-font);
+    padding: 4px 12px;
+    border-radius: 2px;
+    cursor: pointer;
 }
 
 /* ========================================
@@ -263,366 +275,37 @@ html, body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-#bgm-toggle:hover, #hud-toggle:hover, #map-toggle:hover, #char-switch-toggle:hover {
-    background: rgba(20, 20, 40, 0.9);
-    border-color: var(--rain-light);
-    transform: translateY(-2px);
-}
-#bgm-toggle.active {
-    border-color: var(--success-green);
-    color: var(--success-green);
-}
-
 /* ========================================
-   Collection Book
+   Collection Book & Map Windows
    ======================================== */
-#collection-overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-    animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-#collection-book {
-    width: 90%;
-    max-width: 600px;
-    max-height: 85vh;
-    background: var(--paper-cream);
-    border: 4px solid var(--ink-dark);
-    border-radius: 4px;
-    padding: 24px;
-    box-shadow:
-        0 0 40px rgba(0, 0, 0, 0.5),
-        inset 0 0 20px rgba(42, 31, 20, 0.1);
-    overflow-y: auto;
-}
-
-#collection-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 3px solid var(--ink-dark);
-    padding-bottom: 12px;
-}
-
-#collection-header h2 {
-    font-family: var(--pixel-font);
-    font-size: 20px;
-    color: var(--ink-dark);
-    letter-spacing: 4px;
-}
-
-#collection-close {
-    font-size: 20px;
-    background: none;
-    border: 2px solid var(--ink-dark);
-    color: var(--ink-dark);
-    cursor: pointer;
-    padding: 4px 8px;
-    font-family: var(--pixel-font);
-    border-radius: 2px;
-    transition: all 0.2s;
-}
-
-#collection-close:hover {
-    background: var(--ink-dark);
-    color: var(--paper-cream);
-}
-
-#collection-pages {
-    min-height: 300px;
-}
-
-.yokai-entry {
-    padding: 20px;
-    margin-bottom: 16px;
-    border: 2px solid var(--ink-dark);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.yokai-entry.locked {
-    opacity: 0.5;
-    filter: grayscale(1);
-}
-
-.yokai-entry-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 12px;
-}
-
-.yokai-portrait {
-    width: 64px;
-    height: 64px;
-    border: 2px solid var(--ink-dark);
-    image-rendering: pixelated;
-    flex-shrink: 0;
-}
-
-.yokai-name {
-    font-family: var(--pixel-font);
-    font-size: 16px;
-    color: var(--ink-dark);
-    letter-spacing: 2px;
-}
-
-.yokai-subtitle {
-    font-family: var(--pixel-font);
-    font-size: 11px;
-    color: #886644;
-    margin-top: 4px;
-}
-
-.yokai-token {
-    font-family: var(--pixel-font);
-    font-size: 12px;
-    color: var(--dusk-pink);
-    margin-top: 6px;
-}
-
-.yokai-taunt {
-    font-family: var(--pixel-font);
-    font-size: 13px;
-    color: var(--danger-red);
-    font-style: italic;
-    padding: 12px;
-    border-left: 3px solid var(--danger-red);
-    margin-top: 8px;
-    line-height: 1.6;
-}
-
-.yokai-story-btn {
-    font-family: var(--pixel-font);
-    font-size: 12px;
-    color: var(--paper-cream);
-    background: var(--ink-dark);
-    border: none;
-    padding: 8px 16px;
-    cursor: pointer;
-    margin-top: 12px;
-    border-radius: 2px;
-    transition: all 0.2s;
-    letter-spacing: 1px;
-}
-
-.yokai-story-btn:hover {
-    background: var(--dusk-pink);
-    transform: translateY(-1px);
-}
-
-#collection-nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 2px solid var(--ink-dark);
-}
-
-#collection-nav button {
-    font-family: var(--pixel-font);
-    font-size: 16px;
-    background: none;
-    border: 2px solid var(--ink-dark);
-    color: var(--ink-dark);
-    padding: 6px 12px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.2s;
-}
-
-#collection-nav button:hover {
-    background: var(--ink-dark);
-    color: var(--paper-cream);
-}
-
-#col-page-num {
-    font-family: var(--pixel-font);
-    font-size: 12px;
-    color: var(--ink-dark);
-}
-
-/* ========================================
-   Story Scroll
-   ======================================== */
-#story-overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 60;
-    animation: fadeIn 0.5s ease-out;
-}
-
-#story-scroll {
-    width: 85%;
-    max-width: 550px;
-    max-height: 80vh;
-    background: var(--paper-cream);
-    border: 4px solid var(--ink-dark);
-    padding: 32px 28px;
-    overflow-y: auto;
-    box-shadow:
-        0 0 60px rgba(232, 131, 74, 0.2),
-        inset 0 0 30px rgba(42, 31, 20, 0.08);
-    animation: scrollUnfurl 0.6s ease-out;
-}
-
-@keyframes scrollUnfurl {
-    from { transform: scaleY(0.01); opacity: 0; }
-    30% { transform: scaleY(0.01); opacity: 1; }
-    to { transform: scaleY(1); opacity: 1; }
-}
-
-#story-content {
-    font-family: var(--pixel-font);
-    font-size: 14px;
-    color: var(--ink-dark);
-    line-height: 2;
-    letter-spacing: 1px;
-}
-
-#story-content h3 {
-    font-size: 18px;
-    text-align: center;
-    margin-bottom: 20px;
-    letter-spacing: 4px;
-    color: var(--dusk-pink);
-}
-
-#story-content .story-divider {
-    text-align: center;
-    margin: 16px 0;
-    color: #aa8866;
-    letter-spacing: 8px;
-}
-
-#story-content .story-token {
-    margin-top: 20px;
-    padding: 12px 16px;
-    border: 2px dashed var(--dusk-orange);
-    background: rgba(232, 131, 74, 0.08);
-    font-size: 13px;
-    color: var(--dusk-orange);
-    text-align: center;
-    line-height: 1.8;
-}
-
-#story-close {
-    display: block;
-    margin: 24px auto 0;
-    font-family: var(--pixel-font);
-    font-size: 14px;
-    color: var(--paper-cream);
-    background: var(--ink-dark);
-    border: none;
-    padding: 10px 28px;
-    cursor: pointer;
-    border-radius: 2px;
-    letter-spacing: 2px;
-    transition: all 0.2s;
-}
-
-#story-close:hover {
-    background: var(--dusk-pink);
-    transform: translateY(-2px);
-}
-
-/* ========================================
-   Map Overlay
-   ======================================== */
-#map-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-    backdrop-filter: blur(5px);
-}
-
-#map-window {
-    background: #2a2a35;
-    border: 4px solid var(--story-gold);
-    width: 640px;
-    height: 480px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 0 20px rgba(0,0,0,0.8);
-}
-
-#map-header {
+#collection-window, #map-window {
     background: #1a1a24;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #444;
-}
-
-#map-header h2 {
-    color: var(--paper-cream);
-    font-size: 18px;
-    margin: 0;
-}
-
-#map-close {
-    background: transparent;
-    border: none;
-    color: #888;
-    font-size: 20px;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-#map-close:hover {
-    color: var(--danger-red);
-}
-
-#map-content {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    background: repeating-linear-gradient(45deg, #2a2a35, #2a2a35 20px, #262630 20px, #262630 40px);
-}
-
-#map-canvas {
-    image-rendering: pixelated;
+    border: 3px solid var(--rain-blue);
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    color: white;
 }
 
 /* ========================================
    Responsive
    ======================================== */
 @media (max-width: 600px) {
+    #top-right-controls {
+        top: 10px;
+        right: 10px;
+        transform: scale(0.85); /* 手机端稍微缩小 UI 按钮 */
+        transform-origin: top right;
+        flex-wrap: wrap;
+        width: 150px;
+        justify-content: flex-end;
+    }
     #dialog-box {
         width: 94%;
         padding: 14px 16px 12px;
         bottom: 20px;
     }
-    #dialog-text { font-size: 13px; }
-    #hp-bar-bg, #umbrella-bar-bg { width: 120px; }
+    #dialog-text { font-size: 14px; }
+    #umbrella-bar-bg { width: 100px; }
     #timer { font-size: 24px; }
-    #collection-book { padding: 16px; }
-    #story-scroll { padding: 20px 16px; }
-    #story-content { font-size: 12px; }
 }
