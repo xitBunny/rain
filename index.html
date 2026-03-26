@@ -2,102 +2,114 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <!-- 核心修复：强制移动端适配，禁止缩放，适配刘海屏 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <meta name="description" content="不可结缘 — 像素风妖怪收集RPG小游戏，在奇幻的日常中邂逅万物之灵">
+    <meta name="description" content="不可结缘 — 像素风妖怪收集RPG小游戏">
     <title>不可结缘 — 像素风妖怪小游戏</title>
     
-    <!-- 引入路径物理修复：去掉所有的文件夹前缀 -->
     <link rel="stylesheet" href="style.css">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- 使用 defer 确保 DOM 解析完成后再执行 -->
+    <script src="pixel.js" defer></script>
+    <script src="audio.js" defer></script>
+    <script src="yokai.js" defer></script>
+    <script src="player.js" defer></script>
+    <script src="collection.js" defer></script>
+    <script src="menu.js" defer></script>
+    <script src="genderSelect.js" defer></script>
+    <script src="explore.js" defer></script>
+    <script src="encounter.js" defer></script>
+    <script src="rainGame.js" defer></script>
+    <script src="lanternGame.js" defer></script>
+    <script src="bookGame.js" defer></script>
+    <script src="trainGame.js" defer></script>
+    <script src="map.js" defer></script>
+    <script src="result.js" defer></script>
+    <script src="main.js" defer></script>
 </head>
 <body>
     <div id="game-container">
+        <!-- 核心画布 -->
         <canvas id="game-canvas"></canvas>
-        <!-- UI Overlay -->
+        
+        <!-- UI 叠加层 -->
         <div id="ui-overlay" class="hidden">
-            <!-- Dialog Box -->
+            <!-- 对话框 -->
             <div id="dialog-box" class="hidden">
                 <div id="dialog-speaker"></div>
                 <div id="dialog-text"></div>
                 <div id="dialog-next">▼</div>
             </div>
-            <!-- Collection Book (Overlay Layer) -->
+
+            <!-- 妖怪收集册 (关键修复：对应列表 ID) -->
             <div id="collection-overlay" class="hidden">
-                <div id="collection-window">
-                    <div id="col-header">
-                        <h2>= 妖怪收集册 =</h2>
-                        <button id="col-close">X</button>
+                <div id="collection-book">
+                    <div id="collection-header">
+                        <h2>妖怪图鉴</h2>
+                        <button id="collection-close">关闭</button>
                     </div>
-                    <div id="col-content">
-                        <div id="col-left">
-                            <canvas id="col-canvas" width="200" height="200"></canvas>
-                            <h3 id="col-name"></h3>
-                        </div>
-                        <div id="col-right">
-                            <div id="col-story"></div>
-                            <div id="col-item-title">【信物】</div>
-                            <div id="col-item"></div>
-                            <div id="col-taunt"></div>
-                        </div>
+                    <div id="collection-pages">
+                        <!-- 由 JS 填充内容 -->
                     </div>
-                    <div id="col-nav">
-                        <button id="col-prev">◀</button>
-                        <span id="col-page">1 / 1</span>
-                        <button id="col-next">▶</button>
+                    <div id="collection-nav">
+                        <button id="col-prev">上一页</button>
+                        <span id="col-page-num">1 / 1</span>
+                        <button id="col-next">下一页</button>
                     </div>
                 </div>
             </div>
-            <!-- Story Scroll (Overlay Layer) -->
+
+            <!-- 故事卷轴 -->
             <div id="story-overlay" class="hidden">
                 <div id="story-scroll">
                     <div id="story-content"></div>
-                    <button id="story-close">收好</button>
+                    <button id="story-close">合上</button>
                 </div>
             </div>
         </div>
-        <!-- Top Right Controls -->
-        <div id="top-right-controls" class="hidden">
-            <button id="map-toggle">🗺️ 地图</button>
-            <button id="char-switch-toggle">👤 切换主角</button>
-            <button id="bgm-toggle">🎵 音效: 关</button>
-            <button id="hud-toggle">🎒 行囊</button>
-        </div>
 
-        <!-- HUD for minigame -->
+        <!-- 游戏 HUD (小游戏时使用) -->
         <div id="game-hud" class="hidden">
             <div id="hud-left">
                 <div id="tear-counter-container">
-                    <div id="tear-label">💧 大眼泪</div>
+                    <div id="tear-label">守护音符</div>
                     <div id="tear-text">0 / 0</div>
                 </div>
                 <div id="bonus-counter-container">
-                    <div id="bonus-label">★ 附加分</div>
+                    <div id="bonus-label">额外评分</div>
                     <div id="bonus-text">0</div>
                 </div>
                 <div id="umbrella-bar-container">
-                    <div id="umbrella-label">☂ 耐久</div>
-                    <div id="umbrella-bar-bg"><div id="umbrella-bar-fill"></div></div>
+                    <div id="umbrella-label">法力消耗</div>
+                    <div id="umbrella-bar-bg">
+                        <div id="umbrella-bar-fill"></div>
+                    </div>
                 </div>
             </div>
             <div id="hud-right">
                 <div id="timer">60</div>
-                <button id="restart-btn">重新挑战</button>
+                <button id="restart-btn" class="hidden">重新开始</button>
             </div>
         </div>
 
-        <!-- Map Overlay -->
+        <!-- 顶部操作栏 -->
+        <div id="top-right-controls" class="hidden">
+            <button id="map-toggle">地图</button>
+            <button id="char-switch-toggle">角色</button>
+            <button id="bgm-toggle">声音</button>
+            <button id="hud-toggle">图鉴</button>
+        </div>
+
+        <!-- 地图叠加层 -->
         <div id="map-overlay" class="hidden">
             <div id="map-window">
                 <div id="map-header">
-                    <h2>= 结缘之旅地图 =</h2>
-                    <button id="map-close">X</button>
+                    <h2>结缘之旅</h2>
+                    <button id="map-close">×</button>
                 </div>
                 <div id="map-content">
                     <canvas id="map-canvas" width="600" height="400"></canvas>
@@ -105,26 +117,8 @@
             </div>
         </div>
 
-        <!-- CRT Scanline Overlay -->
+        <!-- 复古滤镜 -->
         <div id="crt-overlay"></div>
     </div>
-
-    <!-- 核心修复：所有脚本路径打平 -->
-    <script src="pixel.js"></script>
-    <script src="audio.js"></script>
-    <script src="yokai.js"></script>
-    <script src="player.js"></script>
-    <script src="collection.js"></script>
-    <script src="menu.js"></script>
-    <script src="genderSelect.js"></script>
-    <script src="explore.js"></script>
-    <script src="encounter.js"></script>
-    <script src="rainGame.js"></script>
-    <script src="lanternGame.js"></script>
-    <script src="bookGame.js"></script>
-    <script src="trainGame.js"></script>
-    <script src="map.js"></script>
-    <script src="result.js"></script>
-    <script src="main.js"></script>
 </body>
 </html>

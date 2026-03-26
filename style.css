@@ -29,20 +29,26 @@
     --ui-shadow: rgba(0, 0, 0, 0.6);
 }
 
-/* 核心修复：清除边距，禁止滚动，确保容器铺满全屏 */
-html, body {
-    margin: 0;
-    padding: 0;
+/* 核心修复：强制 html, body 撑满视口，禁止滚动 */
+html {
     width: 100%;
     height: 100%;
-    overflow: hidden; /* 防止手机上出现上下滑动 */
     background: var(--bg-dark);
-    font-family: var(--pixel-font);
-    position: fixed; /* 锁定视口，防止 iOS 橡皮筋回弹 */
-    touch-action: none; /* 禁用系统默认手势，确保画布控制顺滑 */
 }
 
-/* Game Container */
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--bg-dark);
+    font-family: var(--pixel-font);
+    position: fixed; /* 用于 iOS 视口锁定 */
+    touch-action: none; /* 禁止系统自带手势 */
+}
+
+/* 游戏容器：绝对定位并居中 */
 #game-container {
     position: absolute;
     top: 0;
@@ -52,260 +58,144 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-dark);
+    background: #000; /* 黑边背景 */
 }
 
+/* 画布基础样式 */
 #game-canvas {
     display: block;
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain; /* 核心：在不同比例的手机屏上按比例自适应 */
+    object-fit: contain; /* 核心：保持比例缩放 */
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    cursor: none;
+    cursor: auto;
+    background: var(--bg-dark);
 }
 
-/* CRT Scanline Effect */
-#crt-overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.03) 0px,
-        rgba(0, 0, 0, 0.03) 1px,
-        transparent 1px,
-        transparent 3px
-    );
-    z-index: 100;
-}
-
-/* UI Overlay */
+/* UI 叠加层：覆盖在画布上 */
 #ui-overlay {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    pointer-events: none;
+    pointer-events: none; /* 默认穿透 */
     z-index: 10;
 }
 
 #ui-overlay > * {
-    pointer-events: auto;
+    pointer-events: auto; /* 子元素接收点击 */
 }
 
 .hidden {
     display: none !important;
 }
 
-/* ========================================
-   Dialog Box
-   ======================================== */
+/* 对话框 */
 #dialog-box {
     position: absolute;
-    bottom: 40px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    width: 88%;
-    max-width: 700px;
-    background: rgba(13, 13, 26, 0.92);
-    border: 3px solid var(--rain-blue);
-    border-radius: 4px;
-    padding: 20px 24px 16px;
-    box-shadow:
-        0 0 20px rgba(110, 198, 255, 0.3),
-        inset 0 0 30px rgba(110, 198, 255, 0.05);
-    animation: dialogAppear 0.3s ease-out;
-}
-
-@keyframes dialogAppear {
-    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-
-#dialog-speaker {
-    font-family: var(--pixel-font);
-    font-size: 14px;
-    color: var(--rain-light);
-    margin-bottom: 10px;
-    text-shadow: 0 0 8px rgba(110, 198, 255, 0.5);
-    letter-spacing: 2px;
-}
-
-#dialog-text {
-    font-family: var(--pixel-font);
+    width: 90%;
+    max-width: 600px;
+    background: rgba(13, 13, 26, 0.95);
+    border: 2px solid var(--rain-blue);
+    padding: 16px;
+    color: #eee;
     font-size: 16px;
-    color: #e0e0e0;
-    line-height: 1.8;
-    min-height: 50px;
-    letter-spacing: 1px;
+    border-radius: 4px;
 }
 
-#dialog-next {
-    text-align: right;
-    color: var(--rain-blue);
-    font-size: 12px;
-    margin-top: 8px;
-    animation: blink 1s infinite;
-    cursor: pointer;
-}
-
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
-
-/* ========================================
-   Game HUD (Mobile Friendly)
-   ======================================== */
-#game-hud {
+/* 妖怪图鉴窗口 */
+#collection-overlay, #map-overlay, #story-overlay {
     position: absolute;
     top: 0; left: 0;
-    width: 100%;
-    padding: 16px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    z-index: 20;
-    pointer-events: none;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
-}
-
-#hud-left {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-#tear-counter-container, #bonus-counter-container, #umbrella-bar-container {
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    z-index: 50;
 }
 
-#tear-label, #bonus-label, #umbrella-label {
-    font-family: var(--pixel-font);
-    font-size: 14px;
-    color: #ccc;
-    min-width: 70px;
-    text-shadow: 1px 1px 2px black;
+#collection-book, #map-window, #story-scroll {
+    background: var(--paper-cream);
+    border: 4px solid var(--ink-dark);
+    padding: 24px;
+    width: 92%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: var(--ink-dark);
 }
 
-#tear-text {
-    font-family: var(--pixel-font-en);
-    font-size: 18px;
-    color: var(--tear-blue);
-    text-shadow: 0 0 8px rgba(74, 158, 255, 0.6);
+#collection-pages {
+    min-height: 150px;
+    margin: 10px 0;
 }
 
-#bonus-text {
-    font-family: var(--pixel-font-en);
-    font-size: 16px;
-    color: var(--success-green);
-    text-shadow: 0 0 8px rgba(46, 213, 115, 0.6);
+/* HUD 样式 */
+#game-hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    z-index: 20;
 }
+
+#hud-left { display: flex; flex-direction: column; gap: 5px; }
 
 #umbrella-bar-bg {
-    width: 150px;
-    height: 14px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 2px solid #555;
-    border-radius: 2px;
-    overflow: hidden;
+    width: 120px;
+    height: 10px;
+    background: #000;
+    border: 1px solid #555;
 }
 
 #umbrella-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--rain-blue), var(--rain-light));
+    width: 100%;
+    background: var(--rain-blue);
     transition: width 0.3s;
 }
 
-#hud-right {
-    text-align: center;
-}
+#timer { font-size: 28px; color: #fff; text-shadow: 2px 2px #000; }
 
-#timer {
-    font-family: var(--pixel-font-en);
-    font-size: 32px;
-    color: #fff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 2px 2px 4px black;
-}
-
-#timer-label {
-    font-family: var(--pixel-font);
-    font-size: 10px;
-    color: #aaa;
-    margin-top: 2px;
-}
-
-#restart-btn {
-    margin-top: 10px;
-    pointer-events: auto;
-    background: rgba(255, 71, 87, 0.2);
-    border: 1px solid var(--danger-red);
-    color: #fff;
-    font-family: var(--pixel-font);
-    padding: 4px 12px;
-    border-radius: 2px;
-    cursor: pointer;
-}
-
-/* ========================================
-   Top Right Controls (BGM & HUD Toggle)
-   ======================================== */
+/* 顶部操作提示 (Map/Char buttons) */
 #top-right-controls {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
     display: flex;
-    gap: 12px;
+    gap: 8px;
     z-index: 30;
 }
 
-#bgm-toggle, #hud-toggle, #map-toggle, #char-switch-toggle {
-    background: rgba(10, 10, 20, 0.8);
-    border: 2px solid var(--rain-blue);
-    color: var(--paper-cream);
+#top-right-controls button {
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    border: 1px solid #666;
+    padding: 5px 10px;
     font-family: var(--pixel-font);
-    font-size: 14px;
-    padding: 8px 16px;
-    border-radius: 4px;
+    font-size: 12px;
     cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-/* ========================================
-   Collection Book & Map Windows
-   ======================================== */
-#collection-window, #map-window {
-    background: #1a1a24;
-    border: 3px solid var(--rain-blue);
-    padding: 20px;
-    border-radius: 4px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.8);
-    color: white;
+/* CRT 扫描线 */
+#crt-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    background: repeating-linear-gradient(rgba(0,0,0,0.05) 0 1px, transparent 1px 3px);
+    z-index: 100;
 }
 
-/* ========================================
-   Responsive
-   ======================================== */
+/* 响应式微调 */
 @media (max-width: 600px) {
-    #top-right-controls {
-        top: 10px;
-        right: 10px;
-        transform: scale(0.85); /* 手机端稍微缩小 UI 按钮 */
-        transform-origin: top right;
-        flex-wrap: wrap;
-        width: 150px;
-        justify-content: flex-end;
-    }
-    #dialog-box {
-        width: 94%;
-        padding: 14px 16px 12px;
-        bottom: 20px;
-    }
-    #dialog-text { font-size: 14px; }
-    #umbrella-bar-bg { width: 100px; }
-    #timer { font-size: 24px; }
+    #dialog-box { font-size: 14px; bottom: 20px; }
+    #top-right-controls { transform: scale(0.9); top: 5px; right: 5px; }
 }
